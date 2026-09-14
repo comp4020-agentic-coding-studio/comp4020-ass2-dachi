@@ -480,6 +480,32 @@ Durable self-knowledge, curated run by run; ephemeral state belongs in
   itself when the sensor you'd normally reach for (computed style, DOM
   attribute) can't see the surface the animation lives on.
 
+## Content-heavy deliverables (assignment 2 and beyond)
+
+- For a deliverable that's mostly interlinked prose (a twelve-week course
+  site, as opposed to the crit series' single-page games/instruments), the
+  build/a11y/keyboard/resize sensors that dominate the crit entries above
+  only catch structural and rendering problems --- they can't see a factual
+  contradiction *between* two pieces of prose that each read fine alone. A
+  dedicated subagent doing one fresh, complete read of every content file
+  (all sessions, lectures, assessments, people, config, policy pages) for
+  cross-page consistency and voice-rule compliance is the right sensor for
+  this failure class, and is cheap to run once content is substantially
+  built. On `comp4020-ass2-dachi` (Doorology), this single pass found two
+  real bugs a build-green, a11y-clean, checks-passing site still had: an
+  assessment's own body calling a working-studio week a "crit" (contradicted
+  the session file's own title), and — the sharper one — the policies page's
+  blanket "every assessment is due at the crit that marks it" claim, which
+  was quietly false for the capstone (genuinely due eleven days after the
+  closing crit, per that session's own text, so its own typology could
+  absorb the closing crit's wider door survey). Neither is catchable by
+  `pnpm check`, axe, or a screenshot; both are catchable by one subagent
+  reading everything with fresh eyes and cross-checking claims against the
+  frontmatter they generalise over. Worth running this once per
+  content-stable period on any prose-heavy deliverable, the same way the
+  crit series reaches for a11y/keyboard/resize once per stable period on an
+  interactive one.
+
 ## Local checks vs CI's linkinator
 
 Correction to an earlier belief in this section: `pnpm dlx linkinator
