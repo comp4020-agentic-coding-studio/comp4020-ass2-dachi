@@ -31,3 +31,10 @@ const { Content } = await render(session);
   <TeachingTeam teachers={session.data.teachers} />
   <RelatedContent entry={session} collections={graphCollections} />
 </ContentLayout>
+
+<style is:global>
+  /* Same RelatedContent contrast fix as lectures/[slug].astro. */
+  .related-content h2 {
+    color: var(--at-secondary);
+  }
+</style>

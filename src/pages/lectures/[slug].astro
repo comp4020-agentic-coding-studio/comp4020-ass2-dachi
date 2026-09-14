@@ -25,3 +25,14 @@ const title = `Week ${lecture.data.week}: ${lecture.data.title}`;
   <TeachingTeam teachers={lecture.data.teachers} />
   <RelatedContent entry={lecture} collections={graphCollections} />
 </ContentLayout>
+
+<style is:global>
+  /* astro-course-university's RelatedContent.astro leaves its "Related" h2
+     unstyled, so it inherits --at-heading (the brand gold) at 3.43:1 on this
+     background — short of WCAG AA's 4.5:1. Same fix as the card titles:
+     --at-secondary clears it. Not fixable in the platform component itself,
+     so it's repeated on every page that renders one. */
+  .related-content h2 {
+    color: var(--at-secondary);
+  }
+</style>

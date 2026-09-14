@@ -57,6 +57,19 @@ import { sessionLabels, siteConfig } from "../site-config";
   </CardGrid>
 </ContentLayout>
 
+<style is:global>
+  /* --at-heading resolves to --at-primary, the brand's gold; at card size and
+     weight that's 3.43:1 on the card background, short of the 4.5:1 WCAG AA
+     text needs (confirmed with a real contrast audit, not just by eye).
+     --at-secondary is the same two-ink palette's darker bronze and clears
+     5.7:1, so card titles use it instead of the theme's default. This page
+     renders through ContentLayout directly rather than PageLayout, so the
+     same fix has to be repeated here rather than inherited. */
+  .at-card-title {
+    color: var(--at-secondary);
+  }
+</style>
+
 <style>
   .course-tags {
     display: flex;
