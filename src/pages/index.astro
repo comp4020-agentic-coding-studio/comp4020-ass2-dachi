@@ -2,42 +2,51 @@
 import Card from "astro-theme-university/components/Card.astro";
 import CardGrid from "astro-theme-university/components/CardGrid.astro";
 import ContentLayout from "astro-theme-university/layouts/ContentLayout.astro";
-import heroImage from "../assets/images/hero-home.avif";
+import heroImage from "../assets/images/hero-home.png";
 import { courseMeta } from "../course-config";
 import { sessionLabels, siteConfig } from "../site-config";
-
-// STARTER_CONTENT: replace the hero artwork and its alt text below, then
-// remove this comment.
 ---
 
 <ContentLayout
   title={`${courseMeta.code}: ${courseMeta.title}`}
   description={courseMeta.description}
   heroImage={heroImage}
-  heroImageAlt="A lecture theatre reduced to flat gold and black shapes, rows of seats sweeping past the frame, in a two-ink risograph print"
+  heroImageAlt="A door swung open beside a door shut, reduced to flat gold and black shapes on warm cream, in a two-ink risograph print"
   {...siteConfig}
 >
   <ul class="course-tags" aria-label="Course tags">
     {courseMeta.tags.map((tag) => <li>{tag}</li>)}
   </ul>
 
-  <!-- STARTER_CONTENT: replace the authored page below, then remove this comment. -->
   <h2>What you will do</h2>
   <p>
-    Say what a student spends their time on — the making, reading, arguing or
-    measuring that fills the weeks. Name the artefact they walk out with.
+    You will spend the semester on one object: the door. Not doors as a
+    metaphor — the actual hinged, levered, signed, coded things you push,
+    pull, swipe past or get stuck at several times a day without ever being
+    asked to look at one closely. You will survey real doors on and around
+    campus, argue in writing about what each one gets right or wrong, redesign
+    one, and build the fix well enough that someone who has never met you
+    could use it correctly on the first try. The artefact you leave with is a
+    field guide: your own working typology of doors, illustrated with the
+    ones you actually studied.
   </p>
 
   <h2>Who it is for</h2>
   <p>
-    Say who this is aimed at and what they need to already know. Be specific
-    enough that someone can rule themselves in or out without emailing you.
+    Anyone who has ever pulled a door marked "push," and wants to know why
+    that keeps happening and whose fault it is. No design background is
+    assumed, but you should already be comfortable turning a rough opinion
+    into a written argument and taking a critique of your work without
+    treating it as a referendum on you — Doorology runs on weekly studio
+    crits, not lectures you can sit through quietly. If your idea of a
+    satisfying semester project involves a tape measure, a screwdriver and a
+    door that used to be worse, you are the audience.
   </p>
 
   <h2>Where to go next</h2>
   <CardGrid columns={2}>
     <Card title={sessionLabels.plural} href="/sessions/">
-      <p>The weekly schedule and what happens in each teaching session.</p>
+      <p>The twelve-week schedule and what happens in each studio.</p>
     </Card>
     <Card title="Assessment" href="/assessments/">
       <p>What is marked, what it is worth, and when it is due.</p>
