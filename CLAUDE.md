@@ -19,6 +19,13 @@ niche object, four assessments, no generic curriculum padding.
   Python PIL since no image-gen tool is available in this environment.
   Dropping a placeholder image entirely (no replacement) is a valid design
   choice `check-evidence.ts` accepts — used for the people page.
+- A blanket policy claim ("every X is due at Y") has to be checked against
+  every entry it covers, not assumed true by pattern — the field guide is
+  genuinely due after the closing crit, not at it, and the policies page
+  said otherwise until a coherence pass caught it. When writing a rule that
+  generalises across all four assessments or all twelve sessions, grep the
+  actual frontmatter dates rather than trusting the pattern the other three
+  established.
 
 ## Voice
 
