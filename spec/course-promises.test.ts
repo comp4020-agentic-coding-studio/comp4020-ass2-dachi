@@ -9,8 +9,14 @@ interface ApiNode {
   spec?: string[];
 }
 
+interface ApiEdge {
+  from: string;
+  to: string;
+}
+
 interface CourseApi {
   nodes: ApiNode[];
+  edges: ApiEdge[];
 }
 
 const api = JSON.parse(readFileSync(resolve("dist/api/index.json"), "utf8")) as CourseApi;
@@ -42,6 +48,18 @@ describe("course promises", () => {
       expect(curr > prev, `${sessions[i].id} does not come after ${sessions[i - 1].id}`).toBe(
         true,
       );
+    }
+  });
+
+  it("declares every related: edge on one side only, never both", () => {
+    const key = (edge: ApiEdge) => `${edge.from}->${edge.to}`;
+    const declared = new Set(api.edges.map(key));
+    for (const edge of api.edges) {
+      const reverseKey = `${edge.to}->${edge.from}`;
+      expect(
+        declared.has(reverseKey),
+        `${edge.from} and ${edge.to} both declare related: to each other`,
+      ).toBe(false);
     }
   });
 
