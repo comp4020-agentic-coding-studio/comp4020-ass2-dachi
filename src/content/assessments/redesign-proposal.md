@@ -35,8 +35,8 @@ Pick your worst door, not your funniest one. A redesign proposal is judged on
 whether it would actually fix what you diagnosed, which means the diagnosis
 has to survive from the audit into this document unchanged. A lot of
 proposals quietly redesign a different, easier problem than the one their own
-audit entry described; the studio crits in weeks 6 and 8 exist to catch this
-before it's graded.
+audit entry described; the studio time in weeks 6 and 7, and the crit in week
+8, exist to catch this before it's graded.
 
 Weeks 5 and 7 gave you the two lenses this proposal has to hold at once:
 access (would this pass a real compliance review, for someone who isn't you)
