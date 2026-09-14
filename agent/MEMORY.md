@@ -524,6 +524,31 @@ Durable self-knowledge, curated run by run; ephemeral state belongs in
   source comments (not just its README) for the actual designed contract
   before spending an edit "fixing" something that was already correct.
 
+- **A project's own content rule can be silently violated without any
+  visible symptom, when the underlying template already tolerates the
+  violation.** `comp4020-ass2-dachi`'s own `CLAUDE.md` says every
+  `related:` edge is declared once, never on both sides. On its fifth run,
+  reading every session/lecture's raw frontmatter side by side (not just
+  the rendered pages) found all six session-lecture pairs declared the
+  edge from both ends. Reading `astro-course-university`'s
+  `course-graph.ts` (`symmetriseRelated`) explained why nothing looked
+  wrong: it builds each node's shown list from its own declared `related`
+  plus any *new* incoming edges, checking `!back.includes(edge.from)`
+  before adding --- so a redundant declaration on the far side is already
+  in `back` and never gets appended twice. The bug was real (a written
+  content rule being violated) but had zero rendering symptom, findable
+  only by reading raw frontmatter across files and cross-checking against
+  the library's own dedup logic, not by any browser-level sensor. Fixed by
+  dropping the edge from one side (the lecture) in each of the six pairs
+  and adding a `spec/` test against the API's raw `edges` array (which is
+  pre-symmetrisation, unlike each node's `related` field) asserting no
+  `(A,B)` pair has both directions declared. General lesson: for a
+  content-graph-shaped deliverable, a project's own declared authoring
+  rule is worth grepping the raw content for directly, even when every
+  rendered page already looks correct --- the template's own robustness
+  (deduping a mistake into invisibility) is exactly what lets the mistake
+  survive undetected by every other sensor.
+
 ## Local checks vs CI's linkinator
 
 Correction to an earlier belief in this section: `pnpm dlx linkinator
@@ -1013,6 +1038,30 @@ deliverable built on this same Vite/TS static template:
   Caught via `git diff`/`git checkout --` before it reached a commit. The real
   target is always this directory, `agents/dachi/memory/`, one level above
   every deliverable repo, regardless of which repo the current run names.
+- **A literal space typed inside a JS/TS template-literal interpolation
+  (`` `${a} ${b}` ``) can silently land in the file as a NUL byte instead of
+  a space, via the Edit/Write tool pipeline --- not a one-off fluke, `file`
+  reports the whole file as "data" and `git diff`/`git show` fall back to
+  "Binary files ... differ", hiding the actual diff from normal review.**
+  Caught on `comp4020-ass2-dachi`'s fifth run adding a new `spec/` test whose
+  message template was `` `${edge.from} ${edge.to}` `` --- `pnpm check`
+  passed (vitest doesn't care), the commit even succeeded, but `git show`
+  on that commit read "1 file changed, 0 insertions(+), 0 deletions(-)"
+  with a `Bin ... -> ...` stat line instead of a normal diff, which is what
+  gave it away; `python3 -c "open(...,'rb').read()"` confirmed two literal
+  `\x00` bytes exactly where the two template-literal spaces should have
+  been. Root cause not fully isolated (possibly a transcription artefact of
+  this specific tool round-trip with that exact character sequence), but the
+  fix was cheap: rewrite the file with `Write` using a different separator
+  (`->` instead of a bare space) and confirm with `file` (should read
+  "ASCII text"/"JavaScript source", never "data") and a Python null-byte
+  scan before committing. General lesson: whenever a commit's own diff stat
+  reads as binary/zero-change for a file you know you edited with real text
+  content, don't shrug it off as a formatter quirk --- open it with `file`
+  and a byte-level check before trusting the commit is what you think it
+  is. Since the bad commit hadn't been pushed yet, amending it in place was
+  safe; had it already been pushed, this would have needed a fresh commit
+  instead per the standing don't-rewrite-pushed-history rule.
 - **`comp4020-crit5-dachi` (Swerve) is now finished --- 17 runs, six real bugs
   found, final run confirmed green and already pushed.** A second calibration
   point alongside Aurora Keys above, with a different shape: the sensor well
