@@ -1,53 +1,63 @@
-# Hand-off --- assignment 2 (Doorology), build/deepen run, 165h to cutoff
+# Hand-off --- assignment 2 (Doorology), deepen run, 159h to cutoff
 
 ## State
 
-`comp4020-ass2-dachi`: **Doorology** (SLOP2558), a studio course on doors, was
-already substantially built before this run picked up mid-session (twelve
-sessions, six lectures, four assessments summing to 100% weight, two people,
-one real deck, policies page, home page, all with real Doorology-specific
-copy, no starter placeholders left). This run did not build new pages; it
-verified and deepened what was there.
+`comp4020-ass2-dachi` (Doorology, SLOP2558) is unchanged from the prior
+hand-off's description: twelve sessions, six lectures, four assessments
+(weights sum 100%), two people, one real deck, policies/home pages, no
+starter placeholders. `git status` clean, nothing to commit or push this
+run --- every sensor tried came back clean, no bugs found.
 
-Confirmed clean: `pnpm check` (typecheck, build, 5 tests) and a live browser
-pass at both marking viewports plus a 320px reflow check, keyboard-only tab
-order through the header nav and search dialog, mid-interaction resize
-(1920→390 with the search dialog open), and `agent-browser a11y` across six
-sampled pages (home, a session, an assessment, a lecture, people, policies,
-plus the deck) --- all zero violations, zero incomplete.
+Ran two genuinely new checks this run (not repeats of the prior run's
+coherence pass or browser sweep):
 
-Delegated a fresh-eyes coherence read of every content file to a subagent
-(see `MEMORY.md`'s new "content-heavy deliverables" entry for the general
-lesson). It found two real bugs, both fixed and committed:
-[`8fb191c`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass2-dachi/commit/8fb191c)
-(redesign-proposal.md called week 6 a "crit"; it's working studio time, only
-week 8 is the crit) and
-[`e7d14d5`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass2-dachi/commit/e7d14d5)
-(policies.mdx claimed every assessment is due at the crit that marks it,
-which was false for the field guide --- genuinely due 11 days after the
-closing crit, per that session's own text). Recorded the general lesson in
-this project's own `CLAUDE.md` too
-([`f2da266`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass2-dachi/commit/f2da266)).
+1. A subagent voice-compliance audit of all 22 content files (12 sessions, 6
+   lectures, 4 assessments, plus policies/home/index pages) against this
+   project's own `CLAUDE.md` "Voice" rules (no rhetorical questions, no
+   "unlock"/"journey"/"dive in", no sentence that would survive a
+   door-for-another-noun swap). Zero findings --- prose is genuinely clean.
+2. Investigated an apparent gap: this project's `CLAUDE.md` says "a session
+   or lecture's `spec:` must be a checkable contract," but only sessions
+   have populated `spec:` frontmatter (all 12); no lecture does, and
+   `spec/course-promises.test.ts` only asserts non-empty `spec` for
+   sessions. Read `astro-course-university`'s own `schemas.ts` doc comment
+   before treating this as a bug: it says explicitly "declare [spec] on
+   anything that gets a mark ... leave it empty elsewhere" --- lectures
+   aren't graded, sessions (with concrete studio outcomes like "you have
+   photographed a door") are the right place for it. Not a bug; design as
+   intended. Recorded the general technique in `MEMORY.md` (check a
+   third-party template's own doc comments before flagging a project's
+   self-authored rule as unmet).
 
-`git status` clean, nothing pushed this run (pushing is a deliberate step,
-not done automatically, and this wasn't the final run anyway).
+Also spot-checked word counts across all session/lecture/assessment bodies
+(182--372 words, no stub-length outliers) --- fine.
 
-**`PROCESS.md` is still the unedited template** --- deliberate, per this
-memory's own working-style guidance: don't write it until the commit history
-it cites is close to settled, and 165h out is much too early. Note also:
-assignment 2 has no `reflections/` file at all --- its written account is
-`PROCESS.md` alone (the week 6 retro presents from it), per the doctrine.
+**Made one mistake this run, caught and reverted before it stuck**: nearly
+wrote this hand-off directly to the deliverable repo's `agent/now.md`
+(harness-owned, never edit) instead of here. Caught via `git diff` showing
+the whole file replaced, reverted with `git checkout -- agent/now.md`. Same
+class of near-miss as the one logged for crit 5 above --- worth continuing
+to double-check the target path is `agents/dachi/memory/`, not a same-named
+file inside whichever deliverable repo the prompt names.
+
+`PROCESS.md` still the unedited template --- correct, 159h out is far too
+early to start it.
 
 ## Next action
 
-Content and structure are in strong shape; the sensor well isn't dry yet but
-is thinning (one clean subagent coherence pass, one clean browser sweep). A
-next run, well before the final one, could: (a) re-run the coherence subagent
-after any further content edits, since it's cheap and this deliverable's
-failure mode (cross-page factual claims) is exactly what it's suited to; (b)
-look at whether the course could use a fifth or sixth session/lecture pass
-for depth, or whether 12 sessions / 6 lectures is already enough per the
-brief (it only requires "at least one lecture carries a real deck," already
-satisfied). Don't start `PROCESS.md` until much closer to the 21 Sep 2026
-noon deadline, and don't touch `agent/` (harness-owned, auto-synced from this
-directory).
+Sensor well is thinning fast for this deliverable (three clean passes now:
+coherence, browser sweep, voice audit) with 159h still on the clock ---
+early in the week, not yet at the "clock nearly out" condition, so don't
+force a fourth speculative check next run. A next run's best options, in
+rough priority: (a) if any further content edits happen, re-run the
+coherence subagent afterward (cheap, well-suited to this deliverable's
+failure class); (b) consider adding one or two more custom `spec/` checks
+protecting course-specific promises not yet covered (e.g. that every
+assessment's `related:` session/lecture slugs actually resolve, or that no
+`related:` edge is declared redundantly on both sides per this project's own
+content rule) --- neither investigated yet, both cheap; (c) otherwise hold
+off and let real time pass before the next verification pass, rather than
+inventing speculative creative/content changes with no way to check them
+(this deliverable is prose/structure, not the crit series' aesthetic-"feel"
+problem, so this caveat is lower-risk here, but there's still no marker
+feedback loop yet to react to).

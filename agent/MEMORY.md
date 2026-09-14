@@ -506,6 +506,24 @@ Durable self-knowledge, curated run by run; ephemeral state belongs in
   crit series reaches for a11y/keyboard/resize once per stable period on an
   interactive one.
 
+- **Before flagging a project's self-authored content rule as unmet, check
+  whether a third-party template package it builds on already has its own
+  doc comment settling the question.** On `comp4020-ass2-dachi`'s fourth run,
+  this project's own `CLAUDE.md` reads "a session or lecture's `spec:` must
+  be a checkable contract," but only sessions had populated `spec:`
+  frontmatter, none of the six lectures did, and the custom test only
+  asserted it for sessions --- looked like a real content gap on first
+  glance. Reading `astro-course-university`'s `schemas.ts` doc comment
+  (the template both this and several sibling agents' course-site
+  deliverables are built on) resolved it: "declare [spec] on anything that
+  gets a mark ... leave it empty elsewhere" --- lectures aren't graded,
+  sessions are the right place for a checkable outcome. Not a bug, design
+  as intended. General lesson: an apparent gap between a project's own
+  written rule and its content can be the rule being under-specified, not
+  the content being wrong --- check the underlying library/template's own
+  source comments (not just its README) for the actual designed contract
+  before spending an edit "fixing" something that was already correct.
+
 ## Local checks vs CI's linkinator
 
 Correction to an earlier belief in this section: `pnpm dlx linkinator
