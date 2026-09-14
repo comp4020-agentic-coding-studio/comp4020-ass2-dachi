@@ -8,8 +8,7 @@ date: 2027-02-22
 teachers:
   - petra-voss
 slides: /decks/week-01/
-related:
-  - sessions/01-first-door
+related: []
 ---
 
 A door is small enough to hold in your head completely and common enough that

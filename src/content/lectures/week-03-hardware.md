@@ -7,8 +7,7 @@ week: 3
 date: 2027-03-08
 teachers:
   - callum-reyes
-related:
-  - sessions/03-hardware-clinic
+related: []
 ---
 
 A flat plate tells you to push. A handle tells you to pull, or turn, or lift

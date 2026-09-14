@@ -7,8 +7,7 @@ week: 12
 date: 2027-05-17
 teachers:
   - petra-voss
-related:
-  - sessions/12-closing-crit
+related: []
 ---
 
 Everything this semester has looked at is a door you could photograph on or

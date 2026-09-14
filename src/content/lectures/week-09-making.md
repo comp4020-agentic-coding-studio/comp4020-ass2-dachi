@@ -7,8 +7,7 @@ week: 9
 date: 2027-04-26
 teachers:
   - callum-reyes
-related:
-  - sessions/09-making-clinic
+related: []
 ---
 
 A redesign proposal is a document; a prototype is the first version of the

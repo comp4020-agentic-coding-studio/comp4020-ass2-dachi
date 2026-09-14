@@ -7,8 +7,7 @@ week: 5
 date: 2027-03-22
 teachers:
   - callum-reyes
-related:
-  - sessions/05-whose-door-is-it
+related: []
 ---
 
 Most doors are designed, tested and approved by people who can see the sign,

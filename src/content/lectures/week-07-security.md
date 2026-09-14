@@ -7,8 +7,7 @@ week: 7
 date: 2027-04-12
 teachers:
   - petra-voss
-related:
-  - sessions/07-redesign-studio-ii
+related: []
 ---
 
 A deadbolt and a chain lock look like they belong to the same category of
