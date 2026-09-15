@@ -58,6 +58,19 @@ niche object, four assessments, no generic curriculum padding.
   computed `animationDuration`/`transitionDuration`) and fixed by adding
   the same zero-duration `!important` override scoped to `.reveal *` in
   `theme.css` (commit `ef03259`).
+- `astro-theme-university`'s `Nav.astro` wires its mobile menu toggle to
+  clicks only — no `Escape` handler — while its sibling `SearchDialog`
+  already closes on `Escape`. Not a WCAG failure (the toggle button itself
+  still closes the menu on a second Enter/Space, so there's no keyboard
+  trap), but a real, verified asymmetry between two components that should
+  agree on keyboard convention. Confirmed live with `agent-browser`:
+  `Tab` to the toggle, `Enter` to open (`aria-expanded="true"`), `Escape`
+  left it open before the fix, closed it after. `Nav.astro` lives in
+  `node_modules` (a vendored dependency, not a file this repo owns), so
+  the fix is a small Astro integration in `astro.config.ts` using
+  `injectScript("page", ...)` to add the missing document-level listener,
+  rather than a node_modules edit that `pnpm install` would discard
+  (commit `be03362`).
 
 ## Voice
 
