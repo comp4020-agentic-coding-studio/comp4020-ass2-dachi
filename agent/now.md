@@ -1,82 +1,77 @@
-# Hand-off --- assignment 2 (Doorology), deepen run, 141.0h to cutoff
+# Hand-off --- assignment 2 (Doorology), deepen run, 135.0h to cutoff
 
 ## State
 
-`comp4020-ass2-dachi` (Doorology, SLOP2558) is structurally complete and has
-now had five independent verification passes come back clean in a row
-(fetched-brief re-check, raw-frontmatter grep, theme-source read for other
-silent-dedup/fallback shapes, SpecList override check, and this run's real
-`agent-browser` a11y/reflow/keyboard sweep). `git status` clean, one commit
-made and pushed this run.
+`comp4020-ass2-dachi` (Doorology, SLOP2558) remains structurally complete.
+`git status` clean, two commits made and pushed this run (`ef03259`,
+`8b00337`). `pnpm check` and tests green before and after both commits.
 
-This run asked two new questions the prior hand-off hadn't:
+This run invented two genuinely new sensors the prior hand-off had flagged
+as not-yet-tried (dark-mode a11y, deck reduced-motion) and found one real
+methodology trap plus one real bug:
 
-1. **Re-grepped every session/lecture/assessment's raw `related:` frontmatter
-   side by side.** Confirmed the prior run's fix (dropping the lecture-side
-   back-edges) holds, and every assessment's `related:` slugs resolve to
-   real, correctly-dated sessions/lectures. No new bug.
-2. **Read `astro-course-university`'s `schemas.ts`, `content-helpers.ts`,
-   `course-graph.ts`/`-integration.ts`, and `SpecList.astro` fresh**, looking
-   for another "template silently tolerates an authoring mistake" shape like
-   the one the prior run found. `resolveGraph` already throws the build on
-   self-ref/dangling-ref (would have already failed if either existed);
-   `SpecList`'s course-neutral default preamble is correctly overridden with
-   voice-consistent text in both the session and assessment page templates
-   (checked `src/pages/{sessions,assessments}/[slug].astro` directly); no
-   MDX embed-directive refs are in use (site is plain `.md`, so that avenue
-   doesn't apply). No new bug, but this did surface a genuinely new,
-   worth-recording fact: `astro-theme-university`'s own built-in a11y
-   checker (`a11y-checker.ts`/`a11y-worker.mjs`, wired into `pnpm check`
-   itself) runs axe-core inside JSDOM, not a real browser --- structurally
-   blind to `color-contrast`, the exact gap the crit series' memory already
-   flagged for hand-rolled jsdom a11y specs. This is new for the ass2
-   template specifically (the crit series' bare template has no built-in
-   a11y check at all, so there was nothing to be falsely reassured by).
+1. **Dark-mode a11y sweep.** Confirmed the site's dark theme is a real
+   distinct colour-token switch (`astro-theme-university/styles/tokens.css`),
+   not just a CSS variable no-op, then ran `agent-browser a11y --json`
+   against seven page templates (home, a session, a lecture, an assessment,
+   people, policies, the deck) with `data-theme="dark"` forced. 0
+   violations/0 incomplete everywhere --- clean.
 
-Followed up by actually running the independent sensor: served `dist/` on
-localhost and ran `agent-browser a11y --json` across all distinct page
-templates (home, sessions listing + one `[slug]`, lectures listing + one
-`[slug]`, all four assessment `[slug]` pages, people listing + both
-`[slug]`s, policies, the week-1 deck) --- 0 violations, 0 incomplete
-everywhere, so the built-in gate's "clean" result holds up under a real
-browser too, not just a jsdom one. Also ran, for the first time recorded for
-this specific project, the standard 320px reflow check (clean,
-`scrollWidth === innerWidth`) and a light keyboard tab-through on a session
-page (landed on a properly `aria-label`led theme-toggle button after 8 tabs
---- theme chrome, not a bug). Recorded the jsdom-vs-real-browser a11y finding
-in both this project's own `CLAUDE.md` (commit `04edd0b`) and the global
-`MEMORY.md`, per the standing "write findings into the project's own files
-immediately" habit.
+2. **A real methodological trap, found trying to click the dark-mode
+   toggle to set up test (1).** Serving `dist/` at the web root
+   (`python3 -m http.server -d dist`) made the toggle look broken ---
+   clicking did nothing, real CDP click included. Root cause: this site
+   builds with `base: "/comp4020-ass2-dachi/"`, so every script `src` in
+   the built HTML is an absolute path under that prefix, which 404s
+   against a server rooted at `/`. This silently kills *all* client JS
+   while leaving axe-core's a11y results completely unaffected (it mostly
+   audits static DOM/CSS, not JS-driven behaviour) --- so the same sweep
+   from (1), run against the wrongly-served build, would have looked
+   identically clean and given false confidence. Fixed the serving setup
+   (symlink `dist/` under a `comp4020-ass2-dachi` name one level up, serve
+   the parent), re-confirmed the toggle works for real. Recorded in both
+   this project's `CLAUDE.md` and global `MEMORY.md` --- this generalises
+   to any future deliverable with a non-root `base:` path.
 
-`PROCESS.md` still the unedited template --- correct. 141h to cutoff is
-~84% of the week still on the clock, same "too early" reasoning the prior
-two hand-offs already gave; nothing about this run's findings changes that.
+3. **Deck reduced-motion check --- a real bug, fixed.** With serving fixed,
+   forced `prefers-reduced-motion: reduce` and polled every element's
+   computed `animationDuration`/`transitionDuration` on the week-1 deck.
+   The nav-arrow bounce animation and eight slide/fragment transitions were
+   still fully live. Cause: `src/decks/theme.css` only imports
+   `astro-theme-university/styles/deck.css` (decks deliberately skip the
+   site's `base.css`, per that file's own doc comment), so they also miss
+   `base.css`'s blanket reduced-motion override --- and the underlying
+   deck framework (astromotion/reveal.js) ships with no reduced-motion
+   handling of its own anywhere. Fixed by adding the same zero-duration
+   `!important` technique, scoped to `.reveal *`, to `theme.css` (commit
+   `ef03259`). Rebuilt, re-served correctly, re-confirmed live: only two
+   trivial 0.1s whiteboard-toolbar-swatch transitions remain (outside
+   `.reveal`, a colour-picker hover state, not the kind of large-scale
+   motion the media feature targets) --- left alone deliberately.
+
+`PROCESS.md` still the unedited template --- correct, 135h to cutoff is
+~80% of the week still on the clock.
 
 ## Next action
 
-Six-ish consecutive clean passes now across every sensor family this
-project has invented (coherence, browser sweep, voice audit, raw-frontmatter
-grep, theme-source read, and this run's real a11y/reflow/keyboard sweep).
-Per the working-style lesson about not forcing a fourth-plus identical
-re-verification pass: the next run should not just re-run any of the above.
-Genuinely not-yet-tried angles, in rough order of promise:
+Two real, verified findings landed this run (a fixed bug, a fixed
+methodology gap), so the sensor well is not dry — don't read this as
+"time to stop inventing checks." Genuinely not-yet-tried angles for the
+next run:
 
-- A full a11y/reflow/keyboard sweep has now only been spot-checked (16 of
-  32 built pages, one page per template). If a future run wants to extend
-  this rather than invent something new, the untouched pages are the
-  remaining 8 session `[slug]` pages and the remaining 4 lecture `[slug]`
-  pages --- low expected value since every checked page per template came
-  back identically clean, but cheap if the well is otherwise dry.
-- `reduced-motion`/dark-mode checks (the theme ships a dark-mode toggle,
-  confirmed present this run) haven't been run against this project at all
-  yet --- worth a live check (`agent-browser set media dark`,
-  `prefers-reduced-motion`) if any animation/transition exists to check.
-- A fresh full read of `PROCESS.md`'s eventual citations against the actual
-  commit graph isn't due yet (too early per the clock), but when the week
-  gets closer to done, the "browser sweep"/"voice audit"/"coherence" passes
-  referenced in old hand-offs were never given commit citations of their
-  own (they were confirms, not changes) --- worth checking `PROCESS.md`'s
-  eventual narrative doesn't imply more code churn happened than actually
-  did.
-- Otherwise, hold off on new speculative sensor invention and let more of
-  the week pass. 141h out is still firmly inside "deepen," not "finish."
+- The deck's reduced-motion fix was only checked on the one existing deck
+  (week 1). If a future run adds a second deck, re-run the same live
+  animation-duration poll against it too rather than assuming the CSS fix
+  (scoped to `.reveal`, not a per-deck class) automatically covers it ---
+  it should, but hasn't been confirmed against a second instance.
+- The dark-mode a11y sweep and the original light-mode sweep were both run
+  against only 7 of 32 built pages (one per template). Same low-priority
+  backlog item as before: the untouched pages are the remaining 8 session
+  and 4 lecture `[slug]` pages, cheap to extend if the well runs dry again.
+- Search (pagefind) and any other client-JS-driven interaction haven't
+  been live-tested at all yet, and now that the base-path serving trap is
+  known and fixed, a real live test of search actually returning results
+  is a cheap, genuinely new sensor worth trying next.
+- Otherwise, hold off on new speculative sensor invention only once a
+  couple of these have also come back clean or fixed --- 135h out is still
+  firmly inside "deepen," not "finish."

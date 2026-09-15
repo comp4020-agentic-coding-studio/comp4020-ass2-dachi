@@ -572,6 +572,57 @@ Durable self-knowledge, curated run by run; ephemeral state belongs in
   (jsdom vs. a real browser) --- a check that exists is not automatically a
   check that can see contrast.
 
+- **Serving a `dist/` build at the web root silently breaks every
+  JS-dependent live check on a project with a non-root `base:` path, without
+  affecting an a11y audit's result at all --- a methodological trap specific
+  to GitHub Pages project sites, not seen on the crit series' root-served
+  static prototypes.** On `comp4020-ass2-dachi` (`base:
+  "/comp4020-ass2-dachi/"`), serving `dist/` via a plain `python3 -m
+  http.server -d dist` at the web root made the theme's dark-mode toggle look
+  broken --- clicking it (both synthetic `.click()` and a real
+  `agent-browser click`) did nothing, `localStorage`/`data-theme` never
+  changed. The real cause: every script `src` in the built HTML is an
+  absolute path under `/comp4020-ass2-dachi/`, so both bundled scripts
+  404'd against a server rooted at `/`, silently killing all client JS ---
+  a genuine false-negative bug report, caught only by checking
+  `document.scripts[].src` and noticing the requests resolved to the wrong
+  origin path. A same-session `agent-browser a11y` sweep against the
+  same wrongly-served build had already come back 0 violations/0
+  incomplete and stayed identical after fixing the serving path, because
+  axe-core mostly audits static DOM/CSS state that doesn't depend on
+  client JS having loaded at all. Fix: serve `dist/` from a parent
+  directory containing a symlink named after the repo
+  (`ln -s "$(pwd)/dist" "$TMPDIR/comp4020-ass2-dachi"`, serve `$TMPDIR`),
+  so requests resolve at the real base path. General lesson: before
+  trusting any live check of client-JS *behaviour* (a toggle, search, a
+  form) against a locally-served build, confirm the build's `base:` config
+  and serve from a path that matches it --- a clean a11y sweep from the
+  same wrongly-rooted server is not evidence the serving setup is fine,
+  since axe-core's checks mostly don't need the JS to have run at all.
+- **A deck page can silently fall outside a site-wide accessibility
+  guarantee if it deliberately skips the site's own base stylesheet.**
+  `comp4020-ass2-dachi`'s `src/decks/theme.css` imports only
+  `astro-theme-university/styles/deck.css` (decks are a separate dark
+  surface that doesn't load the site's `base.css`, by the file's own doc
+  comment) --- which meant it also missed `base.css`'s blanket
+  `prefers-reduced-motion` override, and the underlying deck framework
+  (astromotion, built on reveal.js) ships with no reduced-motion handling
+  of its own anywhere in its bundled CSS. Confirmed live: forcing
+  `prefers-reduced-motion: reduce` and polling every element's computed
+  `animationDuration`/`transitionDuration` on the deck page showed the
+  nav-arrow bounce (`animation: bounce-right 2s`) and eight slide/fragment
+  transitions (0.2s--1s) still fully live. Fixed by adding the identical
+  zero-duration `!important` technique from `base.css`, scoped to `.reveal
+  *` instead of the whole page, in the project's own theme.css override
+  point (`comp4020-ass2-dachi` commit `ef03259`). General lesson: whenever
+  a page type explicitly opts out of a site's shared base stylesheet for
+  its own visual reasons (a deck, an embed, an iframe'd widget), that
+  opt-out silently drops every *other* global rule that stylesheet
+  happened to carry too, not just the styling the author meant to
+  replace --- check what a shared base stylesheet also does for
+  accessibility (reduced-motion, focus-visible, contrast resets) before
+  assuming a narrower, page-type-specific stylesheet inherits it.
+
 ## Local checks vs CI's linkinator
 
 Correction to an earlier belief in this section: `pnpm dlx linkinator
