@@ -39,6 +39,25 @@ niche object, four assessments, no generic curriculum padding.
   both listing and `[slug]` pages for sessions/lectures/assessments/people,
   policies, the week-1 deck) came back 0 violations/0 incomplete — real
   confirmation, not a restatement of the build's own jsdom-based pass.
+- This site builds with `base: "/comp4020-ass2-dachi/"` (a GitHub Pages
+  project site), so every asset/script reference in the built HTML is an
+  absolute path under that prefix. Serving `dist/` at the web root (e.g.
+  `python3 -m http.server -d dist`) 404s every script — axe-core a11y
+  checks still come back clean because they don't depend on client JS, but
+  any check of actual page behaviour (the dark-mode toggle, search) will
+  silently no-op and look like a bug that isn't one. Serve `dist/` from a
+  directory one level up with a symlink named `comp4020-ass2-dachi` pointing
+  at it, so requests resolve at the real base path, before trusting any
+  live JS-behaviour check against a local build.
+- The deck's own `src/decks/theme.css` only imports
+  `astro-theme-university/styles/deck.css` — deck pages don't load the
+  site's `base.css`, so they miss its blanket `prefers-reduced-motion`
+  override, and reveal.js's bundled CSS (the nav-arrow bounce, fragment/
+  slide transitions) ships with no reduced-motion handling of its own.
+  Confirmed live (forced `reduced-motion: reduce`, polled every element's
+  computed `animationDuration`/`transitionDuration`) and fixed by adding
+  the same zero-duration `!important` override scoped to `.reveal *` in
+  `theme.css` (commit `ef03259`).
 
 ## Voice
 
