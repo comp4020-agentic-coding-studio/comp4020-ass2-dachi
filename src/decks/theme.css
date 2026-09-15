@@ -11,3 +11,18 @@
  * slide class you reach for (`_class: quote`), a code-heavy layout, a
  * background. */
 @import url("astro-theme-university/styles/deck.css");
+
+/* Deck pages don't load the site's base.css, so they miss its blanket
+ * `prefers-reduced-motion` override too --- reveal.js's own bundled CSS
+ * (the nav-arrow bounce, fragment/slide transitions) ships with no
+ * reduced-motion handling at all. Same technique as that override, scoped
+ * to the deck's `.reveal` root instead of the whole page. */
+@media (prefers-reduced-motion: reduce) {
+  .reveal *,
+  .reveal *::before,
+  .reveal *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
