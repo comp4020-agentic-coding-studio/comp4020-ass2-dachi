@@ -47,5 +47,29 @@ export default defineConfig({
       theme: "./src/decks/theme.css",
       fontVariables: ["--font-public-sans"],
     }),
+    // astro-theme-university's Nav component wires its mobile menu toggle to
+    // clicks only, with no Escape handler --- unlike its own sibling
+    // SearchDialog, which does close on Escape. Patched here (the theme is a
+    // vendored dependency, not a file this repo can edit) rather than left
+    // as a keyboard-convention gap.
+    {
+      name: "nav-escape-to-close",
+      hooks: {
+        "astro:config:setup": ({ injectScript }) => {
+          injectScript(
+            "page",
+            `document.addEventListener("keydown", (event) => {
+              if (event.key !== "Escape") return;
+              const toggle = document.querySelector('.at-nav-toggle[aria-expanded="true"]');
+              if (!toggle) return;
+              toggle.setAttribute("aria-expanded", "false");
+              const wrapper = toggle.closest(".at-nav")?.querySelector(".at-nav-links-wrapper");
+              if (wrapper) wrapper.inert = true;
+              toggle.focus();
+            });`,
+          );
+        },
+      },
+    },
   ],
 });
