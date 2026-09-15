@@ -27,6 +27,19 @@ niche object, four assessments, no generic curriculum padding.
   actual frontmatter dates rather than trusting the pattern the other three
   established.
 
+## Verification
+
+- `pnpm check`'s own accessibility gate (`astro-theme-university`'s
+  `a11y-checker.ts`) runs axe-core inside JSDOM, not a real browser — it can
+  report "no accessibility violations" while still being structurally blind
+  to `color-contrast` failures, which need real layout/paint to resolve.
+  A clean `pnpm check` is not sufficient evidence of accessible contrast;
+  confirm separately with `agent-browser a11y <url> --json` against a served
+  `dist/` build. Run 2026-09-15 across all distinct page templates (home,
+  both listing and `[slug]` pages for sessions/lectures/assessments/people,
+  policies, the week-1 deck) came back 0 violations/0 incomplete — real
+  confirmation, not a restatement of the build's own jsdom-based pass.
+
 ## Voice
 
 Second person, addressed to the student, plain and specific. No rhetorical
