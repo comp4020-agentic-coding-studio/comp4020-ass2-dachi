@@ -623,6 +623,63 @@ Durable self-knowledge, curated run by run; ephemeral state belongs in
   accessibility (reduced-motion, focus-visible, contrast resets) before
   assuming a narrower, page-type-specific stylesheet inherits it.
 
+- **A fresh, complete content read (all sessions, lectures, assessments,
+  home, policies) can come back clean, and that's still worth doing once
+  per content-stable period, not just when it turns up a bug.** On
+  `comp4020-ass2-dachi`'s sixth run, re-reading all twelve session pages,
+  six lectures and four assessments against the brief's own explicit
+  warnings ("twelve weeks that repeat one another," "reads as the starter
+  with the nouns swapped") found the course genuinely holding together:
+  each week has a distinct concrete idea (Norman-door vocabulary,
+  accessibility, security theatre, prototype fidelity, typology-widening),
+  the four assessments' weights sum to 100 and each cites the audit/
+  redesign/prototype/field-guide arc precisely, and the voice rule (no
+  "unlock"/"journey", nothing that would survive with "door" swapped for
+  another noun) held on every page checked. No edit resulted. Confirms the
+  two earlier coherence passes (the mislabeled-crit fix, the blanket
+  due-date fix, both logged above) got the real issues and this isn't a
+  site that looks fine on a skim but degrades on a full read.
+- **When two sibling interactive components built by the same vendored
+  theme package disagree on a keyboard convention, that asymmetry is a
+  real, checkable finding even though neither WCAG nor the build's own
+  jsdom-based a11y gate can see it.** `astro-theme-university`'s
+  `SearchDialog.astro` closes on `Escape`; its sibling `Nav.astro`'s mobile
+  menu toggle (same package, same theme, same "open thing on the page,"
+  same file even) only responds to clicks, no `Escape` handler at all.
+  Not a WCAG failure on its own (the toggle button still closes the menu
+  on a second Enter/Space, so there's no keyboard trap), but a real,
+  reproducible gap, confirmed live with `agent-browser`: `Tab` to the
+  toggle, `Enter` to open (`aria-expanded="true"`), `Escape` left it open
+  before a fix, closed it (with focus correctly returned to the toggle)
+  after. General lesson: whenever a page has two or more components that
+  each implement their own open/close or expand/collapse behaviour, check
+  whether they agree on the standard dismissal key (`Escape`), the same
+  way earlier entries in this file check whether cooperating *functions*
+  agree on a predicate --- this is that same asymmetry-hunting lens
+  applied to keyboard conventions across sibling UI widgets rather than to
+  pure logic.
+- **When the component with the bug lives in a vendored package
+  (`node_modules`, gitignored, reset on every `pnpm install`), the fix has
+  to land at the project's own layer, and Astro's integration
+  `injectScript(stage, content)` hook is the right mechanism for a
+  cross-cutting document-level fix that doesn't warrant forking the
+  component or routing every page through a new shared layout.** Editing
+  the vendored file directly would appear to work locally but leaves no
+  trace anywhere `git` or a fresh clone can see. On `comp4020-ass2-dachi`,
+  the `Nav.astro` Escape-to-close gap above was fixed with a ~15-line
+  inline integration in `astro.config.ts` (`astro:config:setup` →
+  `injectScript("page", ...)`) adding one `document`-level `keydown`
+  listener, mirroring the vendored click-handler's own
+  `aria-expanded`/`inert` toggling logic exactly rather than reimplementing
+  it differently. Confirmed via `pnpm check` (still green) and a live
+  `agent-browser` Tab/Enter/Escape sequence both before and after (commit
+  `be03362`). General lesson: `injectScript` is worth reaching for
+  specifically when a fix needs to run on every page and only needs
+  `document`-level scope (not a specific element the page's own markup
+  would need to change) --- it's a smaller, more proportionate patch than
+  either editing a dependency that won't persist, or building a new
+  shared layout wrapper just to carry one script tag.
+
 ## Local checks vs CI's linkinator
 
 Correction to an earlier belief in this section: `pnpm dlx linkinator
