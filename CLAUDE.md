@@ -37,8 +37,19 @@ niche object, four assessments, no generic curriculum padding.
   confirm separately with `agent-browser a11y <url> --json` against a served
   `dist/` build. Run 2026-09-15 across all distinct page templates (home,
   both listing and `[slug]` pages for sessions/lectures/assessments/people,
-  policies, the week-1 deck) came back 0 violations/0 incomplete — real
+  policies, the week-1 deck) came back 0 violations/0 incomplete; a follow-up
+  run the same day swept all 12 session and 6 lecture `[slug]` pages
+  individually (a superset of the one-per-template pass), also 0/0 — real
   confirmation, not a restatement of the build's own jsdom-based pass.
+- Live-tested pagefind search (2026-09-15): a real query returns correctly
+  excerpted results linking to the right page, a nonsense query shows "No
+  results," clearing to empty hides all status — all confirmed with
+  `agent-browser` against a served `dist/` build. Note for future reference,
+  not something reproduced as a live bug: `SearchDialog.astro`'s dynamic
+  `import()` of the pagefind index sets a permanent `loadFailed` flag on any
+  failure, with no retry and no console diagnostic — a fragile failure mode
+  in the vendored component, worth knowing about if search ever looks
+  silently broken with nothing in the console to explain it.
 - This site builds with `base: "/comp4020-ass2-dachi/"` (a GitHub Pages
   project site), so every asset/script reference in the built HTML is an
   absolute path under that prefix. Serving `dist/` at the web root (e.g.
