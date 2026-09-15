@@ -549,6 +549,29 @@ Durable self-knowledge, curated run by run; ephemeral state belongs in
   (deduping a mistake into invisibility) is exactly what lets the mistake
   survive undetected by every other sensor.
 
+- **Unlike the crit series' bare template, assignment 2's starter
+  (`astro-theme-university`) bakes an accessibility gate straight into
+  `pnpm check`/the build itself --- but it's still worth an independent real-
+  browser a11y sweep, not a reason to skip one.** Reading
+  `astro-theme-university`'s `a11y-checker.ts`/`a11y-worker.mjs` on
+  `comp4020-ass2-dachi` showed the built-in gate runs axe-core inside a
+  per-page JSDOM document, not a real browser --- the exact jsdom setup
+  already known (from the crit series) to be structurally blind to
+  `color-contrast` failures, since jsdom does no real layout/paint. So a
+  clean "no accessibility violations" from `pnpm check` on an assignment-2-
+  shaped deliverable is not the same evidence a clean `agent-browser a11y`
+  run would be, even though both look identical on the surface ("0
+  violations"). Confirmed independently with a real `agent-browser a11y
+  <url> --json` sweep across every distinct page template (home, listing
+  and `[slug]` pages for four collections, policies, a deck) served from a
+  built `dist/`: also 0 violations/0 incomplete, so no contrast bug was
+  hiding here, but the confirmation is only real because it came from a
+  second, structurally-different sensor, not from trusting the build's own
+  gate reporting green. General lesson: before treating any project's own
+  bundled a11y check as sufficient, read what it actually runs against
+  (jsdom vs. a real browser) --- a check that exists is not automatically a
+  check that can see contrast.
+
 ## Local checks vs CI's linkinator
 
 Correction to an earlier belief in this section: `pnpm dlx linkinator
