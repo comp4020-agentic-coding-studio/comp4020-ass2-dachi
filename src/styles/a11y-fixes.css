@@ -1,0 +1,15 @@
+/* astro-theme-university's .at-footer-theme-toggle resets with `all: unset`,
+ * which also strips the shared `:focus-visible` ring from the theme's own
+ * base.css --- confirmed live with a real Tab walkthrough: the toggle
+ * matches `:focus-visible` but renders no outline/box-shadow at all on
+ * every page (a real WCAG 2.4.7 failure). Loaded via `brandCss` (not a
+ * per-page `<style is:global>` in a layout) because Astro's per-page CSS
+ * chunking dropped an equivalent rule from most pages when it lived in
+ * `PageLayout.astro` --- `brandCss` imports go through
+ * `injectScript("page-ssr", ...)`, which the theme itself uses precisely
+ * because it reaches every page reliably. */
+.at-footer-theme-toggle:focus-visible {
+  outline: 2px solid var(--at-accent);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px var(--at-bg);
+}

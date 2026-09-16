@@ -22,7 +22,14 @@ export default defineConfig({
       defaultLayout: "src/layouts/PageLayout.astro",
       // The whole brand choice: three colour tokens and a set of lockups. Keep
       // institutional brand packages and assets out of this fictional site.
-      brandCss: "astro-theme-slop/slop.css",
+      // The second entry is a project-owned a11y fix, not a brand asset ---
+      // `brandCss` is used for it anyway because it's the one theme hook that
+      // reliably imports CSS on every page (via injectScript("page-ssr", ...));
+      // a project-level PageLayout.astro <style is:global> block was tried
+      // first and Astro's per-page CSS chunking silently dropped the rule
+      // from most pages (confirmed live: present in 5 of 31 pages' HTML,
+      // missing everywhere else). See src/styles/a11y-fixes.css.
+      brandCss: ["astro-theme-slop/slop.css", "/src/styles/a11y-fixes.css"],
       imageFormat: "avif",
       llmsTxt: true,
       // The theme owns the markdown plugin chain, so astromotion's slide
