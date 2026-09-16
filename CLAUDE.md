@@ -82,6 +82,24 @@ niche object, four assessments, no generic curriculum padding.
   `injectScript("page", ...)` to add the missing document-level listener,
   rather than a node_modules edit that `pnpm install` would discard
   (commit `be03362`).
+- A full two-viewport screenshot sweep (all 32 pages), a desktop keyboard
+  walkthrough, and the 320px reflow check all came back clean (2026-09-16).
+  The one real finding, from the resize-mid-interaction check on the mobile
+  nav: `.at-nav` is `position: sticky`, so the open mobile menu stays pinned
+  at the top while the page scrolls underneath it — nothing locked
+  background scroll. Confirmed live against a real mouse-wheel gesture
+  (`agent-browser mouse wheel`, not `scrollBy` — CSS `overflow: hidden`
+  blocks real wheel/touch input but not a scripted `scrollTo`/`scrollBy`,
+  so that's the wrong sensor to prove a lock actually works). Also confirmed
+  `document.scrollingElement === documentElement` on this page, so the lock
+  has to target `documentElement`, not `body`. Fixed with a third
+  `injectScript("page", ...)` integration (`nav-scroll-lock`) using a
+  MutationObserver on the toggle's `aria-expanded` attribute rather than a
+  click listener, so it also reacts to the Escape handler above and to the
+  desktop breakpoint switch (which leaves `aria-expanded="true"` untouched
+  even once the toggle itself becomes `display: none` — confirmed by the
+  resize check, so the lock logic checks toggle visibility too, not just
+  the attribute) (commit `6b72d6b`).
 
 ## Voice
 
