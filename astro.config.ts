@@ -78,5 +78,44 @@ export default defineConfig({
         },
       },
     },
+    // The mobile menu wrapper toggles `inert` correctly, but nothing stops
+    // the page underneath from scrolling while it's open --- because `.at-nav`
+    // is `position: sticky`, the open menu stays pinned at the top while the
+    // rest of the page (hero image, body copy) scrolls past beneath it, an
+    // effect confirmed live (open menu, `scrollBy`, watch the hero scroll out
+    // from under a menu that doesn't move). A MutationObserver, not the click
+    // handler, is what reacts to every path that flips `aria-expanded`
+    // (click, the Escape handler above, and the desktop breakpoint switch,
+    // which the resize-mid-interaction check found leaves `aria-expanded`
+    // untouched even though the toggle itself becomes `display: none`).
+    {
+      name: "nav-scroll-lock",
+      hooks: {
+        "astro:config:setup": ({ injectScript }) => {
+          injectScript(
+            "page",
+            `function syncNavScrollLock() {
+              const toggle = document.querySelector(".at-nav-toggle");
+              if (!toggle) return;
+              const visible = getComputedStyle(toggle).display !== "none";
+              const expanded = toggle.getAttribute("aria-expanded") === "true";
+              // documentElement, not body, is this page's scrolling element
+              // (confirmed live: document.scrollingElement === documentElement)
+              // --- overflow:hidden on body alone doesn't stop the window
+              // from scrolling here.
+              document.documentElement.style.overflow = visible && expanded ? "hidden" : "";
+            }
+            syncNavScrollLock();
+            new MutationObserver(syncNavScrollLock).observe(document.documentElement, {
+              attributes: true,
+              attributeFilter: ["aria-expanded"],
+              subtree: true,
+            });
+            window.addEventListener("resize", syncNavScrollLock);
+            document.addEventListener("astro:page-load", syncNavScrollLock);`,
+          );
+        },
+      },
+    },
   ],
 });
