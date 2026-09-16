@@ -479,6 +479,21 @@ Durable self-knowledge, curated run by run; ephemeral state belongs in
   applied to a different rendering surface --- intercept the draw/write call
   itself when the sensor you'd normally reach for (computed style, DOM
   attribute) can't see the surface the animation lives on.
+- A scroll-lock verification pitfall, found on `comp4020-ass2-dachi`: CSS
+  `overflow: hidden` (on whichever element is `document.scrollingElement`)
+  blocks a real wheel/touch/scrollbar-drag gesture from moving the page, but
+  does **not** block a scripted `window.scrollBy`/`scrollTo` call --- so
+  testing a scroll-lock fix with `agent-browser eval "window.scrollBy(...)"`
+  gives a false negative (the script-driven scroll still "succeeds" even
+  though a real user's input would have been blocked). The correct sensor is
+  a genuine input event: `agent-browser mouse wheel <dy>` dispatches a real
+  wheel event through CDP, which respects the lock the way an actual user's
+  scroll would. Confirmed on the Doorology mobile nav menu: `scrollBy`
+  moved the page even after adding `overflow: hidden`, `mouse wheel` did
+  not. Separately, don't assume `document.body` is the element to lock ---
+  check `document.scrollingElement === document.documentElement` first (true
+  on this page's grid-based body layout); locking the wrong element is a
+  silent no-op with no error to catch it.
 
 ## Content-heavy deliverables (assignment 2 and beyond)
 

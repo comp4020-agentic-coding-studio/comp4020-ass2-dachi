@@ -1,74 +1,67 @@
-# Hand-off --- assignment 2 (Doorology), deepen run, 124.0h to cutoff
+# Hand-off --- assignment 2 (Doorology), deepen run, 111.0h to cutoff
 
 ## State
 
-`comp4020-ass2-dachi` (Doorology, SLOP2558) remains structurally complete.
-`git status` clean, four commits made and pushed this run (`be03362`,
-`7ca4e8a`, `e20b909`, plus the background agent's findings folded into the
-same docs commits). `pnpm check` green before and after every commit.
+`comp4020-ass2-dachi` remains structurally complete. `git status` clean, two
+commits made and pushed this run (`6b72d6b`, `eee9136`). `pnpm check` green
+before and after every commit. Brief re-fetched and unchanged from what's
+already reflected in the repo (weights sum to 100, code stays `SLOP2558`,
+`related:` edges correctly point at `crits/06-a2-retro`).
 
-Two threads ran this run, one delegated and one direct:
+Worked through the prior hand-off's queued sensor list:
 
-1. **Delegated (background agent): live-tested pagefind search, and
-   extended the a11y sweep to all 12 session + 6 lecture `[slug]` pages**
-   (superset of the prior 7-of-32-templates pass). Both came back clean:
-   search returns correctly excerpted, correctly linked results for a real
-   query, degrades sensibly on nonsense/empty queries; all 18 pages 0
-   violations/0 incomplete. One non-reproduced fragility noted for the
-   record: `SearchDialog.astro`'s dynamic `import()` sets a permanent
-   `loadFailed` flag on any failure with no retry/diagnostic --- not a live
-   bug, just a thing to remember if search ever looks silently broken.
+1. **Delegated (background agent):** full two-viewport screenshot sweep
+   across all 32 pages, a desktop (1920×1080) `Tab`-through-everything
+   keyboard walkthrough, a resize-mid-interaction check on the mobile nav
+   (open at 390px, resize past 640px without reload), and the 320px reflow
+   check on six representative pages. Screenshot sweep, keyboard walkthrough,
+   and reflow check all came back clean (visible focus outline throughout,
+   sensible tab order, no horizontal overflow anywhere).
 
-2. **Direct: a fresh full content read of all 12 sessions, 6 lectures, 4
-   assessments, home and policies** against the brief's own explicit
-   warnings (repetitive weeks, "starter with nouns swapped"). Came back
-   genuinely clean --- distinct concrete idea per week, weights sum to 100,
-   voice rule held throughout. No edit resulted; recorded in global
-   `MEMORY.md` as confirmation the two earlier coherence fixes (mislabeled
-   crit, blanket due-date claim) got the real issues.
+2. **One real finding, verified by hand before fixing:** the resize check
+   surfaced that nothing locks background scroll while the mobile nav menu
+   is open. `.at-nav` is `position: sticky`, so the open menu stays visually
+   pinned at the top while the rest of the page scrolls underneath it ---
+   confirmed live with a genuine `agent-browser mouse wheel` gesture (not
+   `scrollBy`, which still moves the page even under `overflow: hidden` ---
+   CSS `overflow: hidden` only blocks real wheel/touch input, a lesson worth
+   keeping for any future scroll-lock verification). Also had to target
+   `document.documentElement`, not `body`, since `document.scrollingElement`
+   is `documentElement` on this page. Fixed with a third `injectScript`
+   integration in `astro.config.ts` (`nav-scroll-lock`, a MutationObserver on
+   the toggle's `aria-expanded` attribute so it also reacts to the existing
+   Escape handler and to the desktop-breakpoint switch) --- commit `6b72d6b`,
+   documented in the project's own `CLAUDE.md` in `eee9136`.
 
-3. **Direct: a live keyboard walkthrough of the header (mobile viewport)
-   found one real bug.** `astro-theme-university`'s `Nav.astro` mobile
-   menu toggle has no `Escape` handler --- its sibling `SearchDialog` does.
-   Confirmed live with `agent-browser` (Tab/Enter opens the menu,
-   `Escape` left it open before, closed it after). Not a WCAG failure (the
-   toggle itself still closes it on a second Enter/Space), but a real,
-   verified asymmetry. Fixed with a small `injectScript("page", ...)`
-   integration in `astro.config.ts` (`Nav.astro` lives in `node_modules`,
-   not this repo's own code, so the fix has to live at the project's own
-   layer) --- commit `be03362`. Re-confirmed live after rebuilding.
+The subagent that found this initially mischaracterised the menu as a "fixed
+overlay" --- it isn't (it's an in-flow grid-row expand that pushes content
+down, confirmed via a screenshot and `getComputedStyle(...).position ===
+"static"`). The real bug is the sticky *nav bar* staying pinned while
+content scrolls past underneath it, not a classic modal-over-content pattern
+--- worth being precise about this distinction if it comes up again, since
+the fix (lock scroll) turned out to be the right response either way.
 
-**Caution for future runs:** while the background agent was live-testing
-this same site with its own `agent-browser` instance, my parallel direct
-checks in the main run picked up cross-session state (a stray navigation
-to a different URL/viewport mid-check). Confirmed contaminated readings
-by re-running tight, single-block sequences immediately after a fresh
-`open`, and got clean results both times. Don't run a background agent
-and direct `agent-browser` checks against the live site concurrently
-without expecting to redo a contaminated read at least once.
-
-`PROCESS.md` still the unedited template --- correct, 124h to cutoff is
-still deep in "deepen," not "finish."
+`PROCESS.md` still the unedited template --- correct, 111h to cutoff (~34%
+of the week elapsed) is still deep in "deepen," not "finish."
 
 ## Next action
 
-Sensor well still not dry --- this run found and fixed one real bug (the
-Escape-to-close gap) after all four browser-level sensor families
-(a11y light+dark, reduced-motion, base-path serving, search) had already
-gone clean at least once. Genuinely not-yet-tried angles for next run:
+Sensor well still not dry --- this is the second consecutive run to find and
+fix a real bug after a browser-level sensor sweep. Genuinely not-yet-tried
+angles for next run:
 
-- The keyboard walkthrough this run only covered the header (menu toggle,
-  search trigger) at mobile width. A full `Tab`-through-everything pass at
-  desktop width (1920×1080), and a resize-mid-interaction check (open the
-  mobile menu, then resize past the 640px breakpoint, per `Nav.astro`'s
-  own `syncNavInert` --- does it handle that transition cleanly?) haven't
-  been tried yet.
-- A full two-viewport `agent-browser screenshot` sweep across all 32 pages
-  hasn't been done for this project specifically (only the a11y/motion/
-  serving/search/keyboard angles so far) --- cheap, and would catch
-  wrap/overflow issues none of those check for.
-- The 320px CSS reflow check (a standard once-per-project sensor per
-  global `MEMORY.md`) hasn't been run against this site yet.
-- If those come back clean too, 124h is still well over half the week ---
-  hold off on drafting `PROCESS.md` until much closer to the final run;
-  there's no signal yet that the sensor well is actually dry.
+- A logic-symmetry pass has never been run on this project's own scripts
+  (course-graph generation, the a11y-fixes CSS, astromotion deck config) ---
+  everything found so far has come from the vendored theme's components, not
+  this repo's own code. Worth checking whether the project's *own* JS/TS
+  (mostly `astro.config.ts`, `scripts/pages-base.ts`, `src/course-config.ts`)
+  has any asymmetry the way the crit series repeatedly found in game/
+  instrument `main.ts` files.
+- Dark mode: no live check of the theme toggle (persistence across reload,
+  `prefers-color-scheme` respect, contrast in dark mode specifically) has
+  been run yet on this project, despite `agent-browser set media dark`
+  being a known-good technique from the crit series.
+- If those come back clean too, 111h is still comfortably over half the
+  week --- hold off on drafting `PROCESS.md` until much closer to the final
+  run; two consecutive real-bug-finding runs is not yet the "sensors
+  exhausted" signal that licenses drafting evidence files early.
