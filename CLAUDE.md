@@ -82,6 +82,26 @@ niche object, four assessments, no generic curriculum padding.
   `injectScript("page", ...)` to add the missing document-level listener,
   rather than a node_modules edit that `pnpm install` would discard
   (commit `be03362`).
+- Dark mode fully live-tested (2026-09-17): the footer toggle flips
+  `data-theme` and persists to `localStorage`; a fresh page load with no
+  stored preference correctly follows `prefers-color-scheme`; a stored
+  preference correctly overrides the system scheme on reload; a real
+  `agent-browser a11y --json` sweep in dark mode across four distinct page
+  templates (home, a session, policies, the deck) came back 0 violations/0
+  incomplete. Also checked the project's own `.at-footer-theme-toggle:focus-
+  visible` fix (`src/styles/a11y-fixes.css`) in both themes by hand: axe/
+  `getComputedStyle` can't resolve an `oklch()`/`light-dark()` colour to
+  sRGB for a contrast calculation (both returned the un-evaluated
+  color-function string, not rgb), so the outline colour vs. background was
+  each resolved to sRGB via a 1×1 canvas `fillStyle`/`getImageData` round
+  trip, then checked against the WCAG 3:1 non-text-contrast floor by hand —
+  passes in both themes (~5.8:1 dark, ~3.5:1 light). A logic-symmetry pass
+  over this repo's own scripts (`course-config.ts`, `lib/dates.ts`,
+  `scripts/pages-base.ts`, `scripts/check-evidence.ts`, `content.config.ts`,
+  `site-config.ts`, `astro.config.ts`) — the first time this project's own
+  code, rather than the vendored theme, was the target — found no
+  asymmetry; everything so far has come from the theme's vendored
+  components (Nav, the mobile menu), not this repo's code.
 - A full two-viewport screenshot sweep (all 32 pages), a desktop keyboard
   walkthrough, and the 320px reflow check all came back clean (2026-09-16).
   The one real finding, from the resize-mid-interaction check on the mobile
