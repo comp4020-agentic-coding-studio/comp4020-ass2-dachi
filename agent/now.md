@@ -1,67 +1,71 @@
-# Hand-off --- assignment 2 (Doorology), deepen run, 111.0h to cutoff
+# Hand-off --- assignment 2 (Doorology), deepen run, 100.0h to cutoff
 
 ## State
 
-`comp4020-ass2-dachi` remains structurally complete. `git status` clean, two
-commits made and pushed this run (`6b72d6b`, `eee9136`). `pnpm check` green
-before and after every commit. Brief re-fetched and unchanged from what's
-already reflected in the repo (weights sum to 100, code stays `SLOP2558`,
-`related:` edges correctly point at `crits/06-a2-retro`).
+`comp4020-ass2-dachi` remains structurally complete. `git status` clean,
+two commits made and pushed this run (`780bf22`, `923bc83`). `pnpm check`
+green before and after every commit. Brief re-fetched, unchanged (weights
+sum to 100, code stays `SLOP2558`, `related:` edges correctly point at
+`crits/06-a2-retro`).
 
-Worked through the prior hand-off's queued sensor list:
+Worked through the prior hand-off's queued sensor list, both came back
+clean:
 
-1. **Delegated (background agent):** full two-viewport screenshot sweep
-   across all 32 pages, a desktop (1920×1080) `Tab`-through-everything
-   keyboard walkthrough, a resize-mid-interaction check on the mobile nav
-   (open at 390px, resize past 640px without reload), and the 320px reflow
-   check on six representative pages. Screenshot sweep, keyboard walkthrough,
-   and reflow check all came back clean (visible focus outline throughout,
-   sensible tab order, no horizontal overflow anywhere).
+1. **Logic-symmetry pass over this repo's own scripts** (`course-
+   config.ts`, `lib/dates.ts`, `scripts/pages-base.ts`, `scripts/check-
+   evidence.ts`, `content.config.ts`, `site-config.ts`, `astro.config.ts`)
+   --- the first time this project's own code, rather than the vendored
+   theme, was the target. No asymmetry found; every real bug so far has
+   come from the vendored theme's components (Nav, the mobile menu), not
+   this repo's code.
+2. **Dark mode, fully live-tested:** toggle flips `data-theme` and
+   persists to `localStorage`; a fresh load with no stored preference
+   follows `prefers-color-scheme`; a stored preference overrides the
+   system scheme on reload; a real `agent-browser a11y --json` sweep in
+   dark mode across four page templates came back 0/0.
 
-2. **One real finding, verified by hand before fixing:** the resize check
-   surfaced that nothing locks background scroll while the mobile nav menu
-   is open. `.at-nav` is `position: sticky`, so the open menu stays visually
-   pinned at the top while the rest of the page scrolls underneath it ---
-   confirmed live with a genuine `agent-browser mouse wheel` gesture (not
-   `scrollBy`, which still moves the page even under `overflow: hidden` ---
-   CSS `overflow: hidden` only blocks real wheel/touch input, a lesson worth
-   keeping for any future scroll-lock verification). Also had to target
-   `document.documentElement`, not `body`, since `document.scrollingElement`
-   is `documentElement` on this page. Fixed with a third `injectScript`
-   integration in `astro.config.ts` (`nav-scroll-lock`, a MutationObserver on
-   the toggle's `aria-expanded` attribute so it also reacts to the existing
-   Escape handler and to the desktop-breakpoint switch) --- commit `6b72d6b`,
-   documented in the project's own `CLAUDE.md` in `eee9136`.
+Went one step further on two self-generated angles once those came back
+clean, both also clean:
 
-The subagent that found this initially mischaracterised the menu as a "fixed
-overlay" --- it isn't (it's an in-flow grid-row expand that pushes content
-down, confirmed via a screenshot and `getComputedStyle(...).position ===
-"static"`). The real bug is the sticky *nav bar* staying pinned while
-content scrolls past underneath it, not a classic modal-over-content pattern
---- worth being precise about this distinction if it comes up again, since
-the fix (lock scroll) turned out to be the right response either way.
+3. **The project's own focus-visible contrast fix**
+   (`src/styles/a11y-fixes.css`) checked by hand in both themes ---
+   discovered along the way that neither `getComputedStyle` nor axe can
+   resolve an `oklch()`/`light-dark()` colour to sRGB, so had to route
+   through a canvas `fillStyle`/`getImageData` round trip instead. Passes
+   WCAG 1.4.11's 3:1 non-text floor in both themes. New reusable
+   technique, written into global `MEMORY.md`.
+4. **Astro's `ClientRouter` soft navigation** (enabled by default,
+   unoverridden by this project) had never been exercised by any prior
+   check, all of which drove full page loads/reloads. Re-tested all three
+   of this project's own `astro.config.ts` integrations (theme
+   persistence, Escape-to-close, scroll-lock) across a real soft
+   transition, confirmed genuine via a `window.__mark` global surviving
+   the nav. All three held up, including the trickiest case (clicking a
+   nav link from inside the open mobile menu). New reusable technique,
+   also written into global `MEMORY.md`.
 
-`PROCESS.md` still the unedited template --- correct, 111h to cutoff (~34%
-of the week elapsed) is still deep in "deepen," not "finish."
+Both findings documented in the project's own `CLAUDE.md`
+(`780bf22`, `923bc83`).
 
 ## Next action
 
-Sensor well still not dry --- this is the second consecutive run to find and
-fix a real bug after a browser-level sensor sweep. Genuinely not-yet-tried
-angles for next run:
+Four consecutive genuinely-new sensor angles this run, zero bugs found ---
+a different shape from the prior two runs (each found and fixed one real
+bug). Not yet "sensors exhausted" on its own (only one dry run so far,
+and ~40% of the week elapsed, well short of the ~60%+ mark that licensed
+drafting `PROCESS.md` early on other crits) --- but the obvious next
+angles are getting narrower. Not-yet-tried for next run:
 
-- A logic-symmetry pass has never been run on this project's own scripts
-  (course-graph generation, the a11y-fixes CSS, astromotion deck config) ---
-  everything found so far has come from the vendored theme's components, not
-  this repo's own code. Worth checking whether the project's *own* JS/TS
-  (mostly `astro.config.ts`, `scripts/pages-base.ts`, `src/course-config.ts`)
-  has any asymmetry the way the crit series repeatedly found in game/
-  instrument `main.ts` files.
-- Dark mode: no live check of the theme toggle (persistence across reload,
-  `prefers-color-scheme` respect, contrast in dark mode specifically) has
-  been run yet on this project, despite `agent-browser set media dark`
-  being a known-good technique from the crit series.
-- If those come back clean too, 111h is still comfortably over half the
-  week --- hold off on drafting `PROCESS.md` until much closer to the final
-  run; two consecutive real-bug-finding runs is not yet the "sensors
-  exhausted" signal that licenses drafting evidence files early.
+- Print stylesheet / `@media print` --- untested on this project, and the
+  theme may or may not ship one.
+- The pagefind search UI specifically in dark mode (index/results styling,
+  not just the toggle) --- tested search functionality and dark mode
+  separately, never both together.
+- A second full fresh-content read (all 12 sessions, 6 lectures, 4
+  assessments, home, policies) hasn't been run since the sixth run logged
+  in the project's own `CLAUDE.md` --- worth one more pass given content
+  hasn't changed since, mostly to confirm nothing has quietly drifted
+  rather than expecting a new find.
+- If those come back clean too, treat that as the first real "well
+  running dry" signal and consider whether it's time to start thinking
+  about `PROCESS.md`'s eventual shape (not draft it yet at ~40% elapsed).

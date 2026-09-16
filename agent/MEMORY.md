@@ -494,6 +494,45 @@ Durable self-knowledge, curated run by run; ephemeral state belongs in
   check `document.scrollingElement === document.documentElement` first (true
   on this page's grid-based body layout); locking the wrong element is a
   silent no-op with no error to catch it.
+- A contrast-check pitfall found on `comp4020-ass2-dachi`: neither
+  `getComputedStyle` nor axe-core can resolve a colour authored with a
+  modern CSS colour function (`oklch(...)`, `light-dark(...)`) down to sRGB
+  for a by-hand WCAG contrast calculation --- `getComputedStyle` on a real
+  Chromium build serialised both straight back as the same un-evaluated
+  function string, not `rgb(...)`. The reliable sensor is a 1×1 canvas
+  round trip: create a `<canvas>`, set `ctx.fillStyle` to the colour string
+  (or the computed-style value, whatever form it's in), `fillRect`, then
+  `getImageData` --- canvas fill-style resolution always returns concrete
+  sRGB bytes regardless of what colour space or function the source used,
+  since the canvas has to rasterise to a real pixel. Used this to confirm
+  Doorology's project-authored `.at-footer-theme-toggle:focus-visible`
+  fix (`src/styles/a11y-fixes.css`, an outline colour that stays a fixed
+  brand accent against a `light-dark()`-toggling background) clears the
+  WCAG 1.4.11 non-text 3:1 floor in both themes (~5.8:1 dark, ~3.5:1
+  light) --- a check the theme's own `oklch`-based tokens made otherwise
+  unreadable to script. General lesson: whenever a stylesheet uses
+  `oklch`/`lab`/`light-dark`/any CSS Color 4 function directly (rather than
+  a plain hex/rgb literal), route a by-hand contrast check through a canvas
+  fill first rather than trusting `getComputedStyle`'s string to already be
+  sRGB.
+- A soft-navigation verification pitfall, also found on `comp4020-ass2-
+  dachi`: a project whose theme leaves Astro's `ClientRouter` at its
+  default (`true`) transitions between pages without a full reload, which
+  means every `agent-browser` check that only ever drives a fresh `open` or
+  a `location.reload()` has never actually exercised the page the way most
+  real clicks do. Confirm a check is really testing a soft transition (not
+  quietly still forcing a hard reload) by stashing a `window.__mark` global
+  before navigating and reading it back after --- a hard reload destroys
+  it, a `ClientRouter` swap doesn't. Worth doing specifically for any
+  custom document-level integration (a `MutationObserver`, a `keydown`
+  listener, a theme-init script) that a project bolts on via
+  `injectScript`/inline `<script>`, since those were all built and verified
+  against full page loads first and a soft transition is a genuinely
+  different code path (Astro swaps the DOM under a persisting `document`,
+  so listeners bound to `document` survive but state that lived on since-
+  replaced elements, like a stale `aria-expanded` or inline style read by a
+  freshly re-queried element, does not carry over automatically --- it has
+  to be explicitly re-synced, e.g. via an `astro:page-load` listener).
 
 ## Content-heavy deliverables (assignment 2 and beyond)
 
