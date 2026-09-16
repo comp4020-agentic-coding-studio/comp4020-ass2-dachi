@@ -102,6 +102,25 @@ niche object, four assessments, no generic curriculum padding.
   code, rather than the vendored theme, was the target — found no
   asymmetry; everything so far has come from the theme's vendored
   components (Nav, the mobile menu), not this repo's code.
+- `astro-theme-university`'s `clientRouter` defaults to `true` and this
+  project never overrides it, so every navigation is an Astro `ClientRouter`
+  soft transition, not a full page reload — a distinct condition from every
+  previous live check in this file, all of which tested via full page loads
+  or reloads. All three of this project's own `astro.config.ts` integrations
+  (dark-theme persistence, the Escape-to-close handler, the scroll-lock
+  `MutationObserver`) were re-tested specifically across a real soft
+  navigation (confirmed genuine via a `window.__mark` global surviving the
+  transition, which a full reload would destroy): theme survives via the
+  script's `data-astro-rerun`; clicking a nav link *from inside the open
+  mobile menu* lands on the new page with `aria-expanded="false"` and
+  `documentElement.style.overflow` correctly reset to `""` (the
+  `astro:page-load` listener re-syncing against the freshly-swapped
+  toggle's own default state, not a stale one carried over from the old
+  page); Escape still closes a freshly-opened menu afterwards, since its
+  listener is bound to `document`, which persists across the transition.
+  No bug found, but this closes a real gap: nothing in the sweeps above had
+  tested any custom integration against a soft navigation rather than a
+  full page load.
 - A full two-viewport screenshot sweep (all 32 pages), a desktop keyboard
   walkthrough, and the 320px reflow check all came back clean (2026-09-16).
   The one real finding, from the resize-mid-interaction check on the mobile
