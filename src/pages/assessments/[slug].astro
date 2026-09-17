@@ -49,6 +49,6 @@ const { Content } = await render(assessment);
 <style is:global>
   /* Same RelatedContent contrast fix as lectures/[slug].astro. */
   .related-content h2 {
-    color: var(--at-secondary);
+    color: light-dark(var(--at-secondary), var(--at-primary));
   }
 </style>

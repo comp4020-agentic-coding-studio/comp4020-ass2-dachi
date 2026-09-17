@@ -29,10 +29,13 @@ const title = `Week ${lecture.data.week}: ${lecture.data.title}`;
 <style is:global>
   /* astro-course-university's RelatedContent.astro leaves its "Related" h2
      unstyled, so it inherits --at-heading (the brand gold) at 3.43:1 on this
-     background — short of WCAG AA's 4.5:1. Same fix as the card titles:
-     --at-secondary clears it. Not fixable in the platform component itself,
-     so it's repeated on every page that renders one. */
+     background in light mode — short of WCAG AA's 4.5:1. --at-secondary
+     clears it in light mode but only reads 3.5:1 in dark mode, where
+     --at-primary reads 5.8:1 instead — both tokens are flat hex, not
+     theme-aware, so pick per theme rather than one fixed color for both.
+     Not fixable in the platform component itself, so it's repeated on every
+     page that renders one. */
   .related-content h2 {
-    color: var(--at-secondary);
+    color: light-dark(var(--at-secondary), var(--at-primary));
   }
 </style>

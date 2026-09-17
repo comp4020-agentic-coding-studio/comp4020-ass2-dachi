@@ -22,6 +22,6 @@ import { sessionLabels, siteConfig } from "../../site-config";
   /* Same card-title contrast fix as src/pages/index.astro — this page also
      renders through ContentLayout directly, bypassing PageLayout.astro. */
   .at-card-title {
-    color: var(--at-secondary);
+    color: light-dark(var(--at-secondary), var(--at-primary));
   }
 </style>
