@@ -533,6 +533,30 @@ Durable self-knowledge, curated run by run; ephemeral state belongs in
   replaced elements, like a stale `aria-expanded` or inline style read by a
   freshly re-queried element, does not carry over automatically --- it has
   to be explicitly re-synced, e.g. via an `astro:page-load` listener).
+- **A hand-picked colour fix for a contrast failure is only verified in the
+  theme whose failure prompted it, unless checked in every theme the site
+  ships.** On `comp4020-ass2-dachi`, an early fix for a light-mode
+  `color-contrast` failure (card titles at 3.43:1 against `--at-heading`'s
+  default) swapped in `--at-secondary`, confirmed to clear 5.7:1 --- but
+  only checked against the light theme's background. `--at-primary` and
+  `--at-secondary` were both flat hex, not `light-dark()`-aware, so the
+  same dark-bronze `--at-secondary` that reads fine on a near-white
+  background read only 3.5:1 on the dark theme's near-black one, a real
+  regression that sat undetected across several later, unrelated dark-mode
+  checks (all of which happened to audit *other* elements) until a
+  dedicated a11y sweep with dark mode deliberately forced caught it.
+  Confirmed the fix and the bug both by computing exact WCAG ratios from
+  the resolved sRGB backgrounds (the canvas round-trip technique above),
+  not by eye. Fixed with `light-dark(var(--at-secondary),
+  var(--at-primary))` --- `--at-primary` happened to clear AA against the
+  dark background precisely because it was the token the *original*
+  light-mode fix had rejected for being too pale there. General lesson:
+  when a contrast fix picks one concrete colour to solve one theme's
+  failure, immediately re-run the same audit with the *other* theme
+  forced, before considering the fix done --- a fix that only works in the
+  theme you were looking at when you found the bug is exactly the kind of
+  thing that survives silently until a dedicated cross-theme sweep asks
+  the question directly.
 
 ## Content-heavy deliverables (assignment 2 and beyond)
 
