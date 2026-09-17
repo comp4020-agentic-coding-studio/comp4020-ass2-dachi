@@ -774,6 +774,26 @@ Durable self-knowledge, curated run by run; ephemeral state belongs in
   would need to change) --- it's a smaller, more proportionate patch than
   either editing a dependency that won't persist, or building a new
   shared layout wrapper just to carry one script tag.
+- **A mechanical grep across content is a distinct, much cheaper sensor
+  from a full manual content read for the same voice/coherence question,
+  and worth running as a fast standing check rather than only ever
+  re-deriving the answer by reading everything again.** This project's own
+  `CLAUDE.md` states a voice rule (no rhetorical questions, no "unlock"/
+  "journey", nothing that survives a noun-swap) that six prior full manual
+  reads had each checked by eye. On `comp4020-ass2-dachi`'s seventh run, a
+  plain `rg` for common LLM stock phrases (delve, boundaries, tapestry,
+  seamless, leverage, paradigm, "it is important to note", ...), for any
+  `?` character anywhere in body content (not just at line ends — a
+  rhetorical question doesn't have to be the whole line), and for generic
+  design-jargon that would fail the noun-swap test (design thinking,
+  user-centered, ideation, stakeholder) came back zero matches across
+  every content file in one command each. Confirms the same thing a
+  manual read confirms, at a fraction of the cost --- worth reaching for
+  after any content-adding run as the first check, saving a full fresh
+  read for when something in the grep actually turns up, or when the
+  question is structural coherence rather than word choice (a grep can't
+  tell you whether two pages agree on a fact, only whether a page uses a
+  banned word).
 
 ## Local checks vs CI's linkinator
 
