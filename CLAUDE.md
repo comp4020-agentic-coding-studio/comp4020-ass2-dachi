@@ -175,6 +175,41 @@ niche object, four assessments, no generic curriculum padding.
   even once the toggle itself becomes `display: none` — confirmed by the
   resize check, so the lock logic checks toggle visibility too, not just
   the attribute) (commit `6b72d6b`).
+- A full OG/meta-tag audit across every distinct page template (home,
+  session, lecture, assessment, person, policies, deck) found every
+  `og:title`/`og:description`/`<title>` door-specific and accurate — no
+  copy-pasted or generic text. One thing that looks like an inconsistency
+  on first read but isn't: `[slug].astro`/`index.astro` pages (sessions,
+  lectures, assessments, people, home) pass a raw literal `title` straight
+  through to `BaseLayout`, with no suffix, while the hand-written top-level
+  `index.mdx` pages (assessments, lectures, people listings, policies) come
+  out as `"<title> — Slop University"` — `astro-theme-university`'s
+  `remark-default-layout` auto-assigns its layout only to files under
+  `pages/` with no `layout:` frontmatter already set, and that layout is
+  what appends the site-name suffix; the custom route files never go
+  through it. Same mechanism as this repo's other content, just two
+  different page-authoring paths in the starter — not a bug to fix.
+- This starter (`astro-theme-university`) ships no `@astrojs/sitemap`
+  integration and no `robots.txt` in `public/` — `dist/` has neither.
+  Not a gap: the brief and `check:evidence` don't ask for one, and adding
+  one would be scope the assignment didn't request.
+- A second full two-viewport screenshot sweep (2026-09-18), targeted at
+  every template touched since the first sweep (2026-09-16) — the
+  `light-dark()` contrast fix (6 files) and two content edits (session 01,
+  session 04) — came back clean. No overflow, no broken cards, weight/date
+  text still agrees with the underlying frontmatter (door audit correctly
+  reads "20%" both on its own assessment page and in session 04's
+  "Afterwards" summary).
+- A mechanical grep across all of `src/content/` for common LLM stock
+  phrases (delve, boundaries, tapestry, unlock, journey, seamless, robust,
+  leverage, paradigm, "it is important to note", etc.), for rhetorical
+  questions (`\?` anywhere in body text — zero hits, not just zero at line
+  ends), and for generic design-jargon that would fail this file's own
+  noun-swap voice test (design thinking, user-centered, ideation,
+  stakeholder) all came back with zero matches. A different sensor from
+  the several full manual content reads logged above — cheap, and worth
+  re-running after any large content addition as a fast confirm rather
+  than a full re-read.
 
 ## Voice
 
