@@ -7,6 +7,7 @@ week: 4
 date: 2027-03-15
 teachers:
   - petra-voss
+  - callum-reyes
 spec:
   - you bring at least one door you couldn't confidently judge on your own
   - you can state the criterion you're applying to it before the room weighs
@@ -24,9 +25,12 @@ fails.
 ## In the session
 
 This is a crit, not a lecture: each person states their uncertain door, the
-criterion they're judging it against, and the room argues it out. The
-audit's own brief warns against picking ten doors to make a point rather than
-to test one — this session is the last chance to catch that before marking.
+criterion they're judging it against, and the room argues it out. Callum sits
+alongside Petra for this one, since he's the one marking the audit and a
+criterion that sounds settled in the room can still fail his compliance
+checklist. The audit's own brief warns against picking ten doors to make a
+point rather than to test one — this session is the last chance to catch
+that before marking.
 
 ## Afterwards
 
