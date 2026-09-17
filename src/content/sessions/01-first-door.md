@@ -8,8 +8,8 @@ date: 2027-02-22
 teachers:
   - petra-voss
 spec:
-  - your dev environment runs the course's toolchain and you can preview the
-    site locally
+  - you can state the three questions the room asks of every door — what it
+    wants you to do, what you actually did, and whether those were the same
   - you have photographed or sketched the door you used to enter the building
     this session was held in
   - you can name, out loud, one thing that door tells you to do before you
