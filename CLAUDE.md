@@ -26,6 +26,24 @@ niche object, four assessments, no generic curriculum padding.
   generalises across all four assessments or all twelve sessions, grep the
   actual frontmatter dates rather than trusting the pattern the other three
   established.
+- A `teachers:` list on a crit session should include whoever marks the
+  assessment due that session, not just the convenor — the week 8 redesign
+  crit already listed both Petra and Callum for exactly this reason (he
+  marks the redesign proposal), but week 4's audit crit was missing him
+  despite him marking the door audit due there too, found on a seventh
+  fresh content read and fixed to match the established pattern (commit
+  `22f0789`). When a person's own bio names which assessments they mark,
+  check every crit session where one of those assessments is due lists
+  them, not just the ones a first pass happened to get right.
+- A session's `spec:` list can silently inherit a bullet from the
+  underlying `astro-course-university` template's own example content
+  (a generic web-dev claim like "your dev environment runs the course's
+  toolchain") that was never replaced with a claim about this course's
+  actual subject — invisible to `check-evidence.ts` (which only checks
+  that `spec:` exists, not that it's in-universe) and to every browser-level
+  sensor, only findable by reading the prose against the rest of the
+  course's voice. Found on session 1 on a seventh fresh content read,
+  fixed to a door-specific, still-checkable claim (commit `8d60555`).
 
 ## Verification
 
@@ -121,6 +139,24 @@ niche object, four assessments, no generic curriculum padding.
   No bug found, but this closes a real gap: nothing in the sweeps above had
   tested any custom integration against a soft navigation rather than a
   full page load.
+- **A contrast fix verified in only one theme is not verified.** The
+  `.at-card-title`/`.related-content h2` fix (`--at-secondary` instead of
+  the theme default, added early to clear a 3.43:1 light-mode failure) was
+  only ever checked against the light theme's background. `astro-theme-
+  slop`'s `--at-primary`/`--at-secondary` are both flat hex, not
+  `light-dark()`-aware, so the same dark bronze that clears 5.7:1 on a near-
+  white background reads only 3.5:1 on the dark theme's near-black one —
+  a real `agent-browser a11y` violation on three homepage cards, invisible
+  to every prior sweep because they all ran in whichever theme happened to
+  be active at the time, never both deliberately. `--at-primary` clears
+  5.8:1 against the dark background (computed both by hand and confirmed
+  live), so the fix is now `light-dark(var(--at-secondary),
+  var(--at-primary))` everywhere the original fix was applied (6 files,
+  commit `4970561`), re-confirmed 0 violations in both themes afterwards.
+  General lesson: any hand-picked color fix for a contrast failure has to
+  be re-checked against every theme the site ships, not just the one whose
+  failure prompted it — `light-dark()` is the fix shape when the two
+  themes need different literal values from the same semantic token.
 - A full two-viewport screenshot sweep (all 32 pages), a desktop keyboard
   walkthrough, and the 320px reflow check all came back clean (2026-09-16).
   The one real finding, from the resize-mid-interaction check on the mobile
