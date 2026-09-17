@@ -558,6 +558,23 @@ Durable self-knowledge, curated run by run; ephemeral state belongs in
   thing that survives silently until a dedicated cross-theme sweep asks
   the question directly.
 
+- `agent-browser snapshot -c` (the full accessibility tree, not `-i`
+  interactive-only) is a distinct sensor from an axe-core audit for
+  landmark/heading structure: axe checks isolated static rules (contrast,
+  labelling, ARIA validity), but doesn't assert the *shape* a screen-reader
+  user would actually navigate by --- whether landmarks are distinct and
+  labelled (two `navigation`s need different accessible names to be
+  tellable apart by landmark-jump), and whether headings descend without
+  skipping a level. Run for the first time on `comp4020-ass2-dachi` across
+  a session page, a lecture page, and the homepage: all three came back
+  clean (`navigation "Main"` / `main` / `complementary "Related"` /
+  `contentinfo` / `navigation "Legal"`, no skipped heading levels). Worth
+  treating as a standard once-per-content-stable-period check on any
+  multi-page site, the same way the 320px reflow and two-viewport
+  screenshot sweeps already are --- it's cheap (one `snapshot -c` per
+  distinct page template) and checks something none of this project's
+  other sensors do.
+
 ## Content-heavy deliverables (assignment 2 and beyond)
 
 - For a deliverable that's mostly interlinked prose (a twelve-week course
