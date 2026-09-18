@@ -210,6 +210,23 @@ niche object, four assessments, no generic curriculum padding.
   the several full manual content reads logged above — cheap, and worth
   re-running after any large content addition as a fast confirm rather
   than a full re-read.
+- A dedicated throughline check (2026-09-18), distinct from the fact-
+  coherence passes above: read all four assessment briefs side by side
+  against the brief's own model-course criterion — one idea carried the
+  whole semester, not four assignments sharing a topic. It holds: the
+  audit's signifier/affordance vocabulary becomes the redesign's
+  access/trust lenses, the prototype tests whether the redesign's claim
+  survives contact with a stranger, and the field guide asks whether the
+  categories generalise past the doors that produced them — every stage
+  interrogates the same question, does this door tell the truth about
+  what it does, at a different grain. Also reconsidered whether the
+  course's own positioning ("Doorology") states a point of view as
+  directly as the brief's cited model courses — the title is descriptive,
+  but the home page's opening line ("Anyone who has ever pulled a door
+  marked 'push'") already carries the argument the title doesn't; renaming
+  a settled, cross-referenced course code this late for a title that
+  wouldn't add a claim the prose doesn't already make wasn't worth the
+  churn. No edit resulted from either check.
 
 ## Voice
 
