@@ -227,6 +227,15 @@ niche object, four assessments, no generic curriculum padding.
   a settled, cross-referenced course code this late for a title that
   wouldn't add a claim the prose doesn't already make wasn't worth the
   churn. No edit resulted from either check.
+- The generic-template `spec:` bullet found on session 1 (commit `8d60555`)
+  was caught incidentally on a fresh content read, not a targeted sweep —
+  worth checking it wasn't the only one. A systematic pass (2026-09-18)
+  read every session's and lecture's `spec:` frontmatter directly: all 12
+  sessions carry door-specific, checkable bullets, and all 6 lectures
+  correctly carry no `spec:` at all, matching the template's own contract
+  ("declare it on anything that gets a mark, leave it empty elsewhere").
+  Session 1 was an isolated instance, not a pattern — `pnpm check` also
+  green at 32 pages/0 violations/0 broken links/6 tests this same run.
 
 ## Voice
 
