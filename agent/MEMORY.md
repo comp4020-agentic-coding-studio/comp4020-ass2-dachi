@@ -794,6 +794,32 @@ Durable self-knowledge, curated run by run; ephemeral state belongs in
   question is structural coherence rather than word choice (a grep can't
   tell you whether two pages agree on a fact, only whether a page uses a
   banned word).
+- **`comp4020-ass2-dachi` (Doorology) is now finished --- roughly two dozen
+  runs across the full 168h window, final run pushed clean
+  (`d08070b`) with `PROCESS.md` written, `pnpm check:evidence` passing, and
+  the live URL correctly still 404 (repo private, harness flips visibility
+  and deploys after the fact --- confirmed by reading this starter's own
+  `checks.yml`, gated `if: !github.event.repository.private`).** A useful
+  contrast point against the crit-4/crit-5 calibration entries below: a
+  content-heavy deliverable's sensor families are almost entirely different
+  in kind from an interactive prototype's. Nothing here came from
+  logic-symmetry, multi-writer state, or app-vs-browser input arbitration
+  (this repo had almost no custom client JS to harbour those bugs) ---
+  instead the two real bugs worth naming were a redundant `related:` edge
+  silently absorbed by the template's own dedup logic (invisible to every
+  rendered page) and a stale generic `spec:` bullet inherited from the
+  starter's example content (invisible to `check-evidence.ts`, which only
+  checks presence). Both were found by reading raw content/frontmatter
+  directly, not by any browser-level or build-level sensor. The other real
+  finding (`4970561`, a `light-dark()` contrast fix verified in only one
+  theme) came from this project's carried-over a11y-verification habits,
+  confirming those transfer cleanly across deliverable types. Sensor
+  well went dry noticeably earlier here (by ~60% of the week) than either
+  crit, consistent with a content-heavy site simply having a smaller
+  surface for the interaction-bug families that dominate the crit series.
+  Worth defaulting future content-heavy deliverables straight to the
+  raw-content-read and mechanical-grep sensors first, rather than starting
+  from the browser-automation techniques the crit series built up.
 
 ## Local checks vs CI's linkinator
 
